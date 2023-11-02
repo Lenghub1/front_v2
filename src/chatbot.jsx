@@ -1,10 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Axios from "axios";
 import "./chatbot.css";
 
 const Chatbot = () => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
+  const chatMessagesRef = useRef(null); // Add this ref
+
+  // Function to scroll to the bottom of the chat messages
+  const scrollToBottom = () => {
+    chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
+  };
 
   const textQuery = async (text) => {
     // Add user's input to the chat history
@@ -28,7 +34,7 @@ const Chatbot = () => {
         ...prevMessages,
         { who: "bot", text: botResponse },
       ]);
-      console.log(response);
+      scrollToBottom(); // Scroll to the bottom after adding the bot's response
       setInput(""); // Clear the input field
     } catch (error) {
       const errorMessage = "Error, please check your request";
@@ -38,6 +44,7 @@ const Chatbot = () => {
         ...prevMessages,
         { who: "bot", text: errorMessage },
       ]);
+      scrollToBottom(); // Scroll to the bottom after adding the error message
     }
   };
 
@@ -47,15 +54,17 @@ const Chatbot = () => {
     }
   };
 
+  // Use useEffect to scroll to the bottom when the component is initially rendered or when messages change
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   return (
     <div className="chatbot">
-      <div className="chat-messages">
+      <div className="chat-messages" ref={chatMessagesRef}>
         {messages.map((message, index) => (
           <div key={index} className={message.who}>
-            <div>
-              {/* {message.who === 'user' ? '' : ''} */}
-              {message.text}
-            </div>
+            <div>{message.text}</div>
           </div>
         ))}
       </div>

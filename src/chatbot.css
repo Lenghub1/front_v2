@@ -1,6 +1,6 @@
 /* chatbot.css */
 .chatbot {
-  width: 300px;
+  width: 350px;
   margin: 20px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -11,7 +11,8 @@
 .chat-messages {
   padding: 1rem;
   height: 400px;
-  overflow-y: auto;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
 }
 
 .chat-messages::-webkit-scrollbar {
@@ -31,6 +32,9 @@
   color: #fff;
   justify-content: flex-end;
 }
+.input-error {
+  border: 2px solid red;
+}
 
 .user div {
   max-width: 70%;
@@ -43,6 +47,25 @@
 .bot {
   /* margin-right: 5rem; */
   color: #000;
+}
+/* chatbot.css */
+
+/* Existing styles */
+
+.empty-input-warning {
+  background-color: #ff0000; /* Red background color for error message */
+  color: #fff; /* White text color for error message */
+  padding: 10px;
+  border-radius: 10px;
+  margin: 10px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Additional styles for the error message */
+.empty-input-warning::before {
+  content: 'Error: '; /* Add "Error:" before the message */
+  font-weight: bold;
 }
 
 .bot div {

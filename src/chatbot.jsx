@@ -5,22 +5,28 @@ import "./chatbot.css";
 const Chatbot = () => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
-  const chatMessagesRef = useRef(null); // Add this ref
+  const [showEmptyInputWarning, setShowEmptyInputWarning] = useState(false);
+  const chatMessagesRef = useRef(null);
 
-  // Function to scroll to the bottom of the chat messages
   const scrollToBottom = () => {
     chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
   };
 
   const textQuery = async (text) => {
-    // Add user's input to the chat history
+    if (text.trim() === "") {
+      setShowEmptyInputWarning(true);
+      setTimeout(() => {
+        setShowEmptyInputWarning(false);
+      }, 1000);
+      return;
+    }
+
     setMessages((prevMessages) => [
       ...prevMessages,
       { who: "user", text: text },
     ]);
 
     try {
-      // Bot response
       const response = await Axios.post(
         "http://localhost:4000/api/dialogflow/textQuery",
         {
@@ -29,22 +35,20 @@ const Chatbot = () => {
       );
 
       const botResponse = response.data.fulfillmentText;
-      // Add bot's response to the chat history
       setMessages((prevMessages) => [
         ...prevMessages,
         { who: "bot", text: botResponse },
       ]);
-      scrollToBottom(); // Scroll to the bottom after adding the bot's response
-      setInput(""); // Clear the input field
+      scrollToBottom();
+      setInput("");
     } catch (error) {
       const errorMessage = "Error, please check your request";
 
-      // Add error message to the chat history
       setMessages((prevMessages) => [
         ...prevMessages,
         { who: "bot", text: errorMessage },
       ]);
-      scrollToBottom(); // Scroll to the bottom after adding the error message
+      scrollToBottom();
     }
   };
 
@@ -54,7 +58,6 @@ const Chatbot = () => {
     }
   };
 
-  // Use useEffect to scroll to the bottom when the component is initially rendered or when messages change
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -68,6 +71,11 @@ const Chatbot = () => {
           </div>
         ))}
       </div>
+      {showEmptyInputWarning && (
+        <div className="empty-input-warning">
+          Please enter a message.
+        </div>
+      )}
       <div className="chat-input">
         <input
           type="text"

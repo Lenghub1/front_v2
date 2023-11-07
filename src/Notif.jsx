@@ -38,9 +38,12 @@ const SocketTest = () => {
         {showNotifications ? (
           <i className="fa-solid fa-bell"></i>
         ) : (
-          <>
+          <div style={{ position: "relative" }}>
             <i className="fa-regular fa-bell"></i>
-          </>
+            {notifications.length > 0 && (
+              <div className="notification-dot"></div>
+            )}
+          </div>
         )}
         <ul className="notification-list">
           {notifications.map((notification, index) => (

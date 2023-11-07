@@ -45,3 +45,12 @@
 .show-notifications .notification-list {
   max-height: 200px; /* Adjust the max height as needed */
 }
+.notification-dot {
+  position: absolute;
+  top: 2px;
+  right: 10px;
+  width: 6px;
+  height: 6px;
+  background-color: red;
+  border-radius: 50%;
+}

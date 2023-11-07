@@ -1,0 +1,12 @@
+.notification {
+    background-color: #4CAF50; /* Green background color */
+    color: white; /* White text color */
+    padding: 10px; /* Add some padding */
+    position: fixed; /* Make the notification fixed on the screen */
+    bottom: 20px; /* Position it at the bottom */
+    right: 20px; /* Position it on the right side */
+    border-radius: 5px; /* Add rounded corners */
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); /* Add a shadow */
+    z-index: 1; /* Set the z-index to appear above other elements */
+  }
+  

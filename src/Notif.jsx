@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import io from "socket.io-client";
 
-
 const SocketTest = () => {
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -18,11 +17,10 @@ const SocketTest = () => {
     });
 
     socket.on("orderStored", (data) => {
-        console.log("Product stored:", data.message);
-        setNotifications((prevNotifications) => [...prevNotifications, data.message]);
-        console.log("Notifications:", notifications);
-      });
-      
+      console.log("Product stored:", data.message);
+      setNotifications((prevNotifications) => [...prevNotifications, data.message]);
+      console.log("Notifications:", notifications);
+    });
 
     return () => {
       socket.disconnect();
@@ -37,7 +35,13 @@ const SocketTest = () => {
     <div>
       <h2>Socket.IO Notifications</h2>
       <div className={`noti ${showNotifications ? 'show-notifications' : ''}`} onClick={toggleNotifications}>
-        <i className="fa-regular fa-bell"></i>
+        {showNotifications ? (
+          <i className="fa-solid fa-bell"></i>
+        ) : (
+          <>
+            <i className="fa-regular fa-bell"></i>
+          </>
+        )}
         <ul className="notification-list">
           {notifications.map((notification, index) => (
             <li key={index}>{notification}</li>
@@ -47,4 +51,5 @@ const SocketTest = () => {
     </div>
   );
 }
+
 export default SocketTest;

@@ -72,9 +72,7 @@ const Chatbot = () => {
         ))}
       </div>
       {showEmptyInputWarning && (
-        <div className="empty-input-warning">
-          Please enter a message.
-        </div>
+        <div className="empty-input-warning">Please enter a message.</div>
       )}
       <div className="chat-input">
         <input

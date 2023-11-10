@@ -113,15 +113,56 @@ input[type="text"]:focus {
   background-color: #eee;
 }
 
+
 button {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  padding: 10px 20px;
+  margin: 5px;
+  padding: 8px;
   cursor: pointer;
+  background-color: none;
+  border-radius: 4px;
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: #6ea771;
+}
+.btn{
+  top: 37%;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+}
+.new-order-btn{
+  position: relative;
+  top: -3%;
+}
+/* Add these styles for the product card and container */
+.product-container {
+  display: flex;
+  overflow-x: scroll;
+  margin-bottom: 1rem;
+}
+.product-container::-webkit-scrollbar {
+  display: none;
+}
+.product-card {
+  flex: 0 0 auto;
+  width: 150px; /* Adjust the width as needed */
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-right: 10px; /* Add margin between product cards */
+}
+
+.product-card img {
+  max-width: 100%;
+  height: auto;
+}
+.button-card{
+  display: flex;
+  gap: 2px;
+}
+.button-card button{
+  width: 100px;
+}
+.product-name{
+  padding: 5px;
 }

@@ -54,3 +54,8 @@
   background-color: red;
   border-radius: 50%;
 }
+.sellernoti{
+  position: absolute;
+  top: 20%;
+  left: 10%;
+}

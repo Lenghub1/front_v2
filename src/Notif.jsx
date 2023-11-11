@@ -7,31 +7,31 @@ const SocketTest = () => {
   const [showBuyerNotifications, setShowBuyerNotifications] = useState(false);
   const [showSellerNotifications, setShowSellerNotifications] = useState(false);
 
-  useEffect(() => {
-    const socket = io("http://localhost:4000"); // Replace with your server URL
+  // useEffect(() => {
+  //   const socket = io("http://localhost:4000"); // Replace with your server URL
 
-    socket.on("connect", () => {
-      console.log("Connected to the server via WebSocket");
-    });
+  //   socket.on("connect", () => {
+  //     console.log("Connected to the server via WebSocket");
+  //   });
 
-    socket.on("disconnect", () => {
-      console.log("Disconnected from the server via WebSocket");
-    });
+  //   socket.on("disconnect", () => {
+  //     console.log("Disconnected from the server via WebSocket");
+  //   });
 
-    socket.on("buyerNotification", (data) => {
-      console.log("Product stored:", data.message);
-      setBuyerNotifications((prevNotifications) => [...prevNotifications, data.message]);
-    });
+  //   socket.on("buyerNotification", (data) => {
+  //     console.log("Product stored:", data.message);
+  //     setBuyerNotifications((prevNotifications) => [...prevNotifications, data.message]);
+  //   });
 
-    socket.on("sellerNotification", (data) => {
-      console.log("Seller notification:", data.message);
-      setSellerNotifications((prevNotifications) => [...prevNotifications, data.message]);
-    });
+  //   socket.on("sellerNotification", (data) => {
+  //     console.log("Seller notification:", data.message);
+  //     setSellerNotifications((prevNotifications) => [...prevNotifications, data.message]);
+  //   });
 
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
+  //   return () => {
+  //     socket.disconnect();
+  //   };
+  // }, []);
 
   const toggleBuyerNotifications = () => {
     setShowBuyerNotifications(!showBuyerNotifications);

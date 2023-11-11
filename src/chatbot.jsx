@@ -29,7 +29,7 @@ const Chatbot = () => {
 
     try {
       const response = await Axios.post(
-        "http://localhost:4000/api/dialogflow/textQuery",
+        "https://spotless-toad-coveralls.cyclic.app/api/dialogflow/textQuery",
         {
           text: text,
         }
@@ -104,7 +104,7 @@ const Chatbot = () => {
         scrollToBottom();
       }
 
-     
+   
       setInput("");
     } catch (error) {
       const errorMessage = "Error, please check your request";

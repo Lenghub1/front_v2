@@ -1,9 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
-
+import Axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import "./chatbot.css"; // Make sure to import FontAwesome styles and your custom chatbot.css
-import { textQuery } from "./api";
 const Chatbot = () => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
@@ -46,6 +45,7 @@ const Chatbot = () => {
           text: text,
         }
       );
+      console.log(response);
 
       const intentResponse = response.data.intent.displayName;
       const botResponse = response.data.fulfillmentText;
@@ -63,8 +63,8 @@ const Chatbot = () => {
           rating: 4,
         },
         {
-          name: "Mango",
-          price: 20,
+          name: "Cotton",
+          price: 8.99,
           seller: "ah chak",
           url: "https://plantly.io/wp-content/uploads/2020/10/Clivia-2022-2-300x300.webp",
           rating: 3,
@@ -78,24 +78,29 @@ const Chatbot = () => {
         },
         {
           name: "Cacao Tree",
-          price: 19.9945,
+          price: 15.99,
           seller: "ah jm tou",
           url: "https://plantly.io/wp-content/uploads/2023/03/IMG_7603-300x300.jpg",
           rating: 4,
         },
         {
           name: "Happy Leaf",
-          price: 22,
+          price: 15.99,
           seller: "Leng",
+          url: "https://plantly.io/wp-content/uploads/2023/09/Screenshot-2023-09-27-161836.jpg",
+          rating: 3,
+        },
+        {
+          name: "Soybean",
+          price: 25.99,
+          seller: "Koko",
           url: "https://plantly.io/wp-content/uploads/2023/09/Screenshot-2023-09-27-161836.jpg",
           rating: 3,
         },
       ];
 
       if (intentResponse === "show.product") {
-        // Reset the productCardRendered state to false
         setProductCardRendered(false);
-
         const productElements = products.map((product, index) => (
           <div key={index} className="product-card">
             <div>
@@ -182,47 +187,87 @@ const Chatbot = () => {
 
         setProductCardRendered(true);
         scrollToBottom();
-      }
+      } else if (intentResponse === "find.product") {
+        // Handle logic for finding product by name
+        const productName = response.data.parameters.fields.product.stringValue;
+        console.log(productName);
+        const productByName = products.find(
+          (product) => product.name.toLowerCase() === productName.toLowerCase()
+        );
 
+        if (productByName) {
+          const productElement = (
+            <div key={productByName.name} className="product-card">
+              <div>
+                <img src={productByName.url} alt={productByName.name} />
+              </div>
+              <div className="product-dis">
+                <div className="product-name">Name: {productByName.name}</div>
+
+                <div>Price: {productByName.price}$</div>
+                <div className="star-row">
+                  {[...Array(productByName.rating)].map((_, starIndex) => (
+                    <FontAwesomeIcon
+                      key={starIndex}
+                      icon={faStar}
+                      size="sm"
+                      className="star"
+                    />
+                  ))}
+                </div>
+                <div>
+                  Sold by:
+                  <a href="{productByName.seller_link}">
+                    {productByName.seller}
+                  </a>
+                </div>
+              </div>
+              <div className="button-card">
+                <button onClick={() => addToCart(productByName)}>
+                  Add to cart
+                </button>
+              </div>
+            </div>
+          );
+
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            {
+              text: <div className="product-container">{productElement}</div>,
+            },
+          ]);
+
+          scrollToBottom();
+          setInput("");
+        }
+      }
       scrollToBottom();
       setInput("");
-    } catch (error) {
-      const errorMessage = "Error, please check your request";
-
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { who: "bot", text: errorMessage },
-      ]);
-      scrollToBottom();
-    }
+    } catch (error) {}
   };
 
   const addToCart = (product) => {
+    // Check if the product is already in the cart
     const existingItemIndex = cartItems.findIndex(
       (item) => item.name === product.name
     );
 
+    // If the product is already in the cart, update the quantity
     if (existingItemIndex !== -1) {
       setCartItems((prevItems) => {
         const newCartItems = [...prevItems];
         const existingItem = newCartItems[existingItemIndex];
         existingItem.quantity += 1;
-
-        for (let i = 1; i < existingItem.quantity; i++) {
-          newCartItems.push({ ...existingItem });
-        }
         return newCartItems;
       });
     } else {
-      setCartItems((prevItems) => [
-        ...prevItems,
-        { ...product, timeAdded: new Date(), quantity: 1 },
-      ]);
+      // If the product is not in the cart, add it with quantity 1
+      setCartItems((prevItems) => [...prevItems, { ...product, quantity: 1 }]);
     }
+
     calculateTotalPrice();
   };
 
-  console.log(cartItems);
   const keyPressHandler = (e) => {
     if (e.key === "Enter") {
       textQuery(input);
@@ -251,6 +296,34 @@ const Chatbot = () => {
 
     const roundedTotalPrice = totalPrice.toFixed(2); // Round to 2 decimal places
 
+    const handleCheckout = async () => {
+      try {
+        // Prepare the data to be sent to the backend
+        const checkoutData = {
+          products: cartItems.map((item) => ({
+            name: item.name,
+            quantity: item.quantity,
+          })),
+        };
+
+        // Send a POST request to the backend
+        const response = await Axios.post(
+          "http://localhost:4000/api/checkout",
+          checkoutData
+        );
+
+        // Handle the response from the backend (if needed)
+        console.log(response.data);
+
+        // Clear the cart after successful checkout (if needed)
+        setCartItems([]);
+        setTotalPrice(0);
+      } catch (error) {
+        console.error("Error during checkout:", error);
+        // Handle error (e.g., display an error message to the user)
+      }
+    };
+
     return (
       <div className="cart">
         <h3>Shopping Cart</h3>
@@ -262,10 +335,11 @@ const Chatbot = () => {
           ))}
         </ul>
         <p>Total price: ${roundedTotalPrice}</p>
-        <button> check out</button>
+        <button onClick={handleCheckout}>Checkout</button>
       </div>
     );
   };
+
   const renderNewOrderButton = () => {
     if (
       messages.length > 0 &&

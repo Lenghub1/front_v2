@@ -91,7 +91,7 @@ const Chatbot = () => {
           rating: 3,
         },
         {
-          name: "Soybean",
+          name: "Soybeans",
           price: 25.99,
           seller: "Koko",
           url: "https://plantly.io/wp-content/uploads/2023/09/Screenshot-2023-09-27-161836.jpg",

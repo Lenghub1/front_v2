@@ -59,3 +59,11 @@
   top: 20%;
   left: 10%;
 }
+.star-row {
+  display: flex;
+}
+
+.star {
+  font-size: 1em; /* Adjust the size as needed */
+  margin-right: 2px; /* Adjust the spacing between stars as needed */
+}

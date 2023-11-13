@@ -64,7 +64,7 @@
 
 /* Additional styles for the error message */
 .empty-input-warning::before {
-  content: 'Error: '; /* Add "Error:" before the message */
+  content: "Error: "; /* Add "Error:" before the message */
   font-weight: bold;
 }
 
@@ -113,7 +113,6 @@ input[type="text"]:focus {
   background-color: #eee;
 }
 
-
 button {
   margin: 5px;
   padding: 8px;
@@ -125,13 +124,13 @@ button {
 button:hover {
   background-color: #6ea771;
 }
-.btn{
+.btn {
   top: 37%;
   position: absolute;
   display: flex;
   flex-direction: column;
 }
-.new-order-btn{
+.new-order-btn {
   position: relative;
   top: -3%;
 }
@@ -154,15 +153,20 @@ button:hover {
 
 .product-card img {
   max-width: 100%;
-  height: auto;
+  height: 150px;
 }
-.button-card{
+.button-card {
   display: flex;
   gap: 2px;
 }
-.button-card button{
-  width: 100px;
+.button-card button {
+  width: 100%;
 }
-.product-name{
-  padding: 5px;
+.product-name {
+  margin-top: 10px;
+}
+.product-dis{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }

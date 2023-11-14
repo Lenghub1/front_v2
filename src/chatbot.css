@@ -10,7 +10,7 @@
 
 .chat-messages {
   padding: 1rem;
-  height: 400px;
+  height: 500px;
   overflow-y: scroll;
   scroll-behavior: smooth;
 }
@@ -125,7 +125,6 @@ button:hover {
   background-color: #6ea771;
 }
 .btn {
-  top: 37%;
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -152,7 +151,7 @@ button:hover {
 }
 
 .product-card img {
-  max-width: 100%;
+  width: 100%;
   height: 150px;
 }
 .button-card {

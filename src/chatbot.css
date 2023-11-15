@@ -162,6 +162,7 @@ button:hover {
   width: 100%;
 }
 .product-name {
+  font-size: 16px;
   margin-top: 10px;
 }
 .product-dis{

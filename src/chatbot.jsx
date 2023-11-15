@@ -18,7 +18,6 @@ const Chatbot = () => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [products, setProducts] = useState([]);
   const chatMessagesRef = useRef(null);
-  
   const addToCart = (product, quantity = 1) => {
     setCartItems((prevItems) => {
       const existingItemIndex = prevItems.findIndex(
@@ -151,7 +150,7 @@ const Chatbot = () => {
           response
         );
         setInput("");
-
+        
       } else if (intentResponse === "remove.product") {
         handleRemoveProduct(
           text,
@@ -222,19 +221,31 @@ const Chatbot = () => {
     };
 
     return (
-      <div className="cart">
-        <h3>Shopping Cart</h3>
-        <ul>
-          {mergedCartItems.map((item, index) => (
-            <li key={index}>
-              {item.name} - {item.price}$ x{item.quantity}
-            </li>
-          ))}
-        </ul>
-        <p>Total price: ${roundedTotalPrice}</p>
-        <button onClick={handleCheckout}>Checkout</button>
+      <div className="cart-container">
+        <h3>Your Shopping Cart</h3>
+        <div className="cart">
+          <ul className="cart-items">
+            {mergedCartItems.map((item, index) => (
+              <li key={index} className="cart-item">
+                <img src={item.url} alt={item.name} className="product-image" />
+                <div className="product-details">
+                  <p className="product-name">{item.name}</p>
+                  <p className="product-price">${item.price}</p>
+                  <p className="product-quantity">Quantity: {item.quantity}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <div className="cart-summary">
+            <p className="total-price">Total: ${roundedTotalPrice}</p>
+            <button className="checkout-button" onClick={handleCheckout}>
+              Proceed to Checkout
+            </button>
+          </div>
+        </div>
       </div>
     );
+    
   };
 
   const renderNewOrderButton = () => {

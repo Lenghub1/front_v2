@@ -6,6 +6,7 @@ import {
   handleRecommendProduct,
   handleFindProduct,
   handleRecommendCategory,
+  handleAddOrder,
 } from "./IntentHandler";
 
 const Chatbot = () => {
@@ -17,6 +18,25 @@ const Chatbot = () => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [products, setProducts] = useState([]);
   const chatMessagesRef = useRef(null);
+  
+  const addToCart = (product, quantity = 1) => {
+    setCartItems((prevItems) => {
+      const existingItemIndex = prevItems.findIndex(
+        (item) => item.name === product.name
+      );
+
+      if (existingItemIndex !== -1) {
+        const newCartItems = [...prevItems];
+        const existingItem = newCartItems[existingItemIndex];
+        existingItem.quantity += quantity / 2;
+        return newCartItems;
+      } else {
+        return [...prevItems, { ...product, quantity: quantity }];
+      }
+    });
+
+    calculateTotalPrice();
+  };
 
   const calculateTotalPrice = () => {
     const totalPrice = cartItems.reduce((total, item) => {
@@ -77,7 +97,6 @@ const Chatbot = () => {
         ...prevMessages,
         { who: "bot", text: botResponse },
       ]);
-
       if (intentResponse === "show.product") {
         handleShowProduct(
           response,
@@ -88,6 +107,7 @@ const Chatbot = () => {
           addToCart
         );
         setInput("");
+
       } else if (intentResponse === "recommend.product") {
         handleRecommendProduct(
           response,
@@ -98,6 +118,7 @@ const Chatbot = () => {
           addToCart
         );
         setInput("");
+
       } else if (intentResponse === "find.product") {
         handleFindProduct(
           response,
@@ -108,8 +129,8 @@ const Chatbot = () => {
           addToCart
         );
         setInput("");
-      } else if (intentResponse === "recommend.product.by.catagory") {
 
+      } else if (intentResponse === "recommend.product.by.catagory") {
         handleRecommendCategory(
           response,
           setMessages,
@@ -119,27 +140,29 @@ const Chatbot = () => {
           addToCart
         );
         setInput("");
+
+      } else if (intentResponse === "add_order") {
+        handleAddOrder(
+          text,
+          setMessages,
+          scrollToBottom,
+          addToCart,
+          products,
+          response
+        );
+        setInput("");
+
+      } else if (intentResponse === "remove.product") {
+        handleRemoveProduct(
+          text,
+          setMessages,
+          scrollToBottom,
+          removeFromCart,
+          products
+        );
+        setInput("");
       }
     } catch (error) {}
-  };
-
-  const addToCart = (product) => {
-    const existingItemIndex = cartItems.findIndex(
-      (item) => item.name === product.name
-    );
-
-    if (existingItemIndex !== -1) {
-      setCartItems((prevItems) => {
-        const newCartItems = [...prevItems];
-        const existingItem = newCartItems[existingItemIndex];
-        existingItem.quantity += 1;
-        return newCartItems;
-      });
-    } else {
-      setCartItems((prevItems) => [...prevItems, { ...product, quantity: 1 }]);
-    }
-
-    calculateTotalPrice();
   };
 
   const keyPressHandler = (e) => {
@@ -157,19 +180,7 @@ const Chatbot = () => {
     if (cartItems.length === 0) {
       return null;
     }
-
-    const cartItemsWithCount = cartItems.reduce((acc, item) => {
-      const existingItemIndex = acc.findIndex((i) => i.name === item.name);
-      if (existingItemIndex !== -1) {
-        acc[existingItemIndex].count += 1;
-      } else {
-        acc.push({ ...item, count: 1 });
-      }
-      return acc;
-    }, []);
-
-    const roundedTotalPrice = totalPrice.toFixed(2); // Round to 2 decimal places
-
+    const roundedTotalPrice = totalPrice.toFixed(2);
     const mergeData = (cartItems) => {
       const mergedData = {};
       cartItems.forEach((item) => {
@@ -186,10 +197,10 @@ const Chatbot = () => {
 
       return mergedArray;
     };
-
+    const mergedCartItems = mergeData(cartItems);
+    console.log(mergedCartItems);
     const handleCheckout = async () => {
       try {
-        const mergedCartItems = mergeData(cartItems);
         const checkoutData = {
           products: mergedCartItems.map((item) => ({
             name: item.name,
@@ -214,9 +225,9 @@ const Chatbot = () => {
       <div className="cart">
         <h3>Shopping Cart</h3>
         <ul>
-          {cartItemsWithCount.map((item, index) => (
+          {mergedCartItems.map((item, index) => (
             <li key={index}>
-              {item.name} - {item.price}$ x{item.count}
+              {item.name} - {item.price}$ x{item.quantity}
             </li>
           ))}
         </ul>

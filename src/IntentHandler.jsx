@@ -2,7 +2,14 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 
-const handleShowProduct = (response, setMessages, setProductCardRendered, products, scrollToBottom, addToCart) => {
+const handleShowProduct = (
+  response,
+  setMessages,
+  setProductCardRendered,
+  products,
+  scrollToBottom,
+  addToCart
+) => {
   console.log(products);
   const productElements = products.map((product, index) => (
     <div key={index} className="product-card">
@@ -45,10 +52,15 @@ const handleShowProduct = (response, setMessages, setProductCardRendered, produc
   scrollToBottom();
 };
 
-const handleRecommendProduct = (response, setMessages, setProductCardRendered, products, scrollToBottom,addToCart) => {
-  const recommendedProducts = products.filter(
-    (product) => product.rate >= 4
-  );
+const handleRecommendProduct = (
+  response,
+  setMessages,
+  setProductCardRendered,
+  products,
+  scrollToBottom,
+  addToCart
+) => {
+  const recommendedProducts = products.filter((product) => product.rate >= 4);
 
   const productElements = recommendedProducts.map((product, index) => (
     <div key={index} className="product-card">
@@ -74,8 +86,8 @@ const handleRecommendProduct = (response, setMessages, setProductCardRendered, p
           <a href={product.seller_link}>{product.seller}</a>
         </div>
         <div className="button-card">
-        <button onClick={() => addToCart(product)}>Add to cart</button>
-      </div>
+          <button onClick={() => addToCart(product)}>Add to cart</button>
+        </div>
       </div>
     </div>
   ));
@@ -91,7 +103,14 @@ const handleRecommendProduct = (response, setMessages, setProductCardRendered, p
   scrollToBottom();
 };
 
-const handleFindProduct = (response, setMessages, setProductCardRendered, products, scrollToBottom,addToCart) => {
+const handleFindProduct = (
+  response,
+  setMessages,
+  setProductCardRendered,
+  products,
+  scrollToBottom,
+  addToCart
+) => {
   const searchTerm = response.data.parameters.fields.product.stringValue;
   console.log(response);
   const filteredProducts = products.filter((product) =>
@@ -122,8 +141,8 @@ const handleFindProduct = (response, setMessages, setProductCardRendered, produc
           <a href={product.seller_link}>{product.seller}</a>
         </div>
         <div className="button-card">
-        <button onClick={() => addToCart(product)}>Add to cart</button>
-      </div>
+          <button onClick={() => addToCart(product)}>Add to cart</button>
+        </div>
       </div>
     </div>
   ));
@@ -147,11 +166,21 @@ const handleFindProduct = (response, setMessages, setProductCardRendered, produc
   setProductCardRendered(true);
   scrollToBottom();
 };
-const handleRecommendCategory = (response, setMessages, setProductCardRendered, products, scrollToBottom, addToCart) => {
-  const category = response.data.parameters.fields.category.listValue.values[0].stringValue;
+const handleRecommendCategory = (
+  response,
+  setMessages,
+  setProductCardRendered,
+  products,
+  scrollToBottom,
+  addToCart
+) => {
+  const category =
+    response.data.parameters.fields.category.listValue.values[0].stringValue;
 
   const recommendedCategoryProducts = products.filter(
-    (product) => product.category.toLowerCase() === category.toLowerCase() && product.rate >= 4
+    (product) =>
+      product.category.toLowerCase() === category.toLowerCase() &&
+      product.rate >= 4
   );
 
   const productElements = recommendedCategoryProducts.map((product, index) => (
@@ -202,4 +231,34 @@ const handleRecommendCategory = (response, setMessages, setProductCardRendered, 
   setProductCardRendered(true);
   scrollToBottom();
 };
-export { handleShowProduct, handleRecommendProduct, handleFindProduct ,handleRecommendCategory};
+const handleAddOrder = (
+  text,
+  setMessages,
+  scrollToBottom,
+  addToCart,
+  products,
+  response
+) => {
+  const quantity =
+    response.data.parameters.fields.number.listValue.values[0].numberValue;
+  const productName =
+    response.data.parameters.fields.product.listValue.values[0].stringValue;
+
+  const selectedProduct = products.find(
+    (product) => product.name.toLowerCase() === productName.toLowerCase()
+  );
+
+  if (selectedProduct) {
+    addToCart(selectedProduct, quantity);
+  } else {
+    console.error("Product not found in the product list.");
+  }
+};
+
+export {
+  handleShowProduct,
+  handleRecommendProduct,
+  handleFindProduct,
+  handleRecommendCategory,
+  handleAddOrder,
+};

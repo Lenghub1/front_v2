@@ -90,12 +90,9 @@ const Chatbot = () => {
       );
 
       const intentResponse = response.data.intent.displayName;
-      const botResponse = response.data.fulfillmentText;
+      let botResponse = response.data.fulfillmentText;
+      console.log(response);
 
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { who: "bot", text: botResponse },
-      ]);
       if (intentResponse === "show.product") {
         handleShowProduct(
           response,
@@ -105,8 +102,8 @@ const Chatbot = () => {
           scrollToBottom,
           addToCart
         );
-        setInput("");
 
+        setInput("");
       } else if (intentResponse === "recommend.product") {
         handleRecommendProduct(
           response,
@@ -117,7 +114,6 @@ const Chatbot = () => {
           addToCart
         );
         setInput("");
-
       } else if (intentResponse === "find.product") {
         handleFindProduct(
           response,
@@ -128,7 +124,6 @@ const Chatbot = () => {
           addToCart
         );
         setInput("");
-
       } else if (intentResponse === "recommend.product.by.catagory") {
         handleRecommendCategory(
           response,
@@ -139,7 +134,6 @@ const Chatbot = () => {
           addToCart
         );
         setInput("");
-
       } else if (intentResponse === "add_order") {
         handleAddOrder(
           text,
@@ -150,7 +144,6 @@ const Chatbot = () => {
           response
         );
         setInput("");
-        
       } else if (intentResponse === "remove.product") {
         handleRemoveProduct(
           text,
@@ -160,7 +153,17 @@ const Chatbot = () => {
           products
         );
         setInput("");
+      } else if (intentResponse === "order.completed") {
+        if (cartItems.length === 0) {
+          botResponse = "Pls add at least 1 product to cart before checkout";
+        } else if (cartItems.length > 0) {
+          botResponse = "Do you want to checkout?";
+        }
       }
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { who: "bot", text: botResponse },
+      ]);
     } catch (error) {}
   };
 
@@ -174,51 +177,51 @@ const Chatbot = () => {
     textQuery(buttonText);
     setInput("");
   };
+  const mergeData = (cartItems) => {
+    const mergedData = {};
+    cartItems.forEach((item) => {
+      const itemName = item.name;
 
+      if (mergedData[itemName]) {
+        mergedData[itemName].quantity += item.quantity;
+      } else {
+        mergedData[itemName] = { ...item };
+      }
+    });
+
+    const mergedArray = Object.values(mergedData);
+
+    return mergedArray;
+  };
+  const handleCheckout = async () => {
+    try {
+      const checkoutData = {
+        products: mergedCartItems.map((item) => ({
+          name: item.name,
+          quantity: item.quantity,
+        })),
+      };
+
+      const response = await Axios.post(
+        "http://localhost:4000/api/checkout",
+        checkoutData
+      );
+
+      console.log(response.data);
+      setCartItems([]);
+      setTotalPrice(0);
+    } catch (error) {
+      console.error("Error during checkout:", error);
+    }
+  };
+  
   const renderCart = () => {
     if (cartItems.length === 0) {
       return null;
     }
     const roundedTotalPrice = totalPrice.toFixed(2);
-    const mergeData = (cartItems) => {
-      const mergedData = {};
-      cartItems.forEach((item) => {
-        const itemName = item.name;
-
-        if (mergedData[itemName]) {
-          mergedData[itemName].quantity += item.quantity;
-        } else {
-          mergedData[itemName] = { ...item };
-        }
-      });
-
-      const mergedArray = Object.values(mergedData);
-
-      return mergedArray;
-    };
     const mergedCartItems = mergeData(cartItems);
     console.log(mergedCartItems);
-    const handleCheckout = async () => {
-      try {
-        const checkoutData = {
-          products: mergedCartItems.map((item) => ({
-            name: item.name,
-            quantity: item.quantity,
-          })),
-        };
-
-        const response = await Axios.post(
-          "http://localhost:4000/api/checkout",
-          checkoutData
-        );
-
-        console.log(response.data);
-        setCartItems([]);
-        setTotalPrice(0);
-      } catch (error) {
-        console.error("Error during checkout:", error);
-      }
-    };
 
     return (
       <div className="cart-container">
@@ -245,19 +248,17 @@ const Chatbot = () => {
         </div>
       </div>
     );
-    
   };
 
   const renderNewOrderButton = () => {
     if (
       messages.length > 0 &&
-      messages[messages.length - 1].text === "Please make a new order. 🤓"
+      messages[messages.length - 1].text === "Do you want to checkout?"
     ) {
       return (
         <div className="new-order-btn">
-          <button onClick={() => handleButtonClick("i want to make new order")}>
-            Make a New Order
-          </button>
+          <button onClick={handleCheckout}>Yes</button>
+          <button>Cancel</button>
         </div>
       );
     }

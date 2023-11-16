@@ -1,15 +1,12 @@
-
 .screen {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
 
-  
-  /* SocketTest.css */
+/* SocketTest.css */
 .noti {
   cursor: pointer;
   display: flex;
@@ -54,7 +51,7 @@
   background-color: red;
   border-radius: 50%;
 }
-.sellernoti{
+.sellernoti {
   position: absolute;
   top: 20%;
   left: 10%;
@@ -111,7 +108,7 @@
 }
 
 .product-name {
-  font-size: 18px;
+  font-size: 16px;
   color: #333;
 }
 

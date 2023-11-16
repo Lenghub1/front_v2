@@ -239,21 +239,31 @@ const handleAddOrder = (
   products,
   response
 ) => {
-  const quantity =
-    response.data.parameters.fields.number.listValue.values[0].numberValue;
-  const productName =
-    response.data.parameters.fields.product.listValue.values[0].stringValue;
+  console.log(response);
 
-  const selectedProduct = products.find(
-    (product) => product.name.toLowerCase() === productName.toLowerCase()
-  );
+  const productValues = response.data.parameters.fields.product.listValue.values;
+  const numberValues = response.data.parameters.fields.number.listValue.values;
+  if (productValues.length !== numberValues.length) {
+    console.error("Mismatch in product and quantity values.");
+    return;
+  }
 
-  if (selectedProduct) {
-    addToCart(selectedProduct, quantity);
-  } else {
-    console.error("Product not found in the product list.");
+  for (let i = 0; i < productValues.length; i++) {
+    const quantity = numberValues[i].numberValue;
+    const productName = productValues[i].stringValue;
+
+    const selectedProduct = products.find(
+      (product) => product.name.toLowerCase() === productName.toLowerCase()
+    );
+
+    if (selectedProduct) {
+      addToCart(selectedProduct, quantity);
+    } else {
+      console.error(`Product '${productName}' not found in the product list.`);
+    }
   }
 };
+
 
 export {
   handleShowProduct,

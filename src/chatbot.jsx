@@ -7,6 +7,7 @@ import {
   handleFindProduct,
   handleRecommendCategory,
   handleAddOrder,
+  handleRemoveOrder
 } from "./IntentHandler";
 
 const Chatbot = () => {
@@ -18,6 +19,7 @@ const Chatbot = () => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [products, setProducts] = useState([]);
   const chatMessagesRef = useRef(null);
+  
   const addToCart = (product, quantity = 1) => {
     setCartItems((prevItems) => {
       const existingItemIndex = prevItems.findIndex(
@@ -36,7 +38,32 @@ const Chatbot = () => {
 
     calculateTotalPrice();
   };
+  const removeFromCart = (product, quantity) => {
+    console.log(product, quantity);
+    setCartItems((prevItems) => {
+      const existingItemIndex = prevItems.findIndex(
+        (item) => item.name === product.name
+      );
 
+      if (existingItemIndex !== -1) {
+        const newCartItems = [...prevItems];
+        const existingItem = newCartItems[existingItemIndex];
+
+        if (existingItem.quantity > quantity) {
+          existingItem.quantity -= quantity;
+        } else {
+          // Remove the entire item from the cart if quantity is less than or equal
+          newCartItems.splice(existingItemIndex, 1);
+        }
+
+        return newCartItems;
+      }
+
+      return prevItems;
+    });
+
+    calculateTotalPrice();
+  };
   const calculateTotalPrice = () => {
     const totalPrice = cartItems.reduce((total, item) => {
       return total + item.price * item.quantity;
@@ -144,12 +171,12 @@ const Chatbot = () => {
           response
         );
         setInput("");
-      } else if (intentResponse === "remove.product") {
-        handleRemoveProduct(
+      } else if (intentResponse === "order.remove") {
+        handleRemoveOrder(
+          response,
           text,
-          setMessages,
           scrollToBottom,
-          removeFromCart,
+          removeFromCart,  // Pass removeFromCart function to handleRemoveOrder
           products
         );
         setInput("");

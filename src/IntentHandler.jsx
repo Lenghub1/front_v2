@@ -263,6 +263,45 @@ const handleAddOrder = (
     }
   }
 };
+const handleRemoveOrder = (
+  response,
+  text,
+  scrollToBottom,
+  removeFromCart,
+  products
+) => {
+  const parameters = response.data.parameters.fields;
+
+  if (parameters.product && parameters.product.listValue && parameters.product.listValue.values) {
+    const productValues = parameters.product.listValue.values;
+
+    productValues.forEach((productValue) => {
+      const productName = productValue.stringValue;
+
+      const product = products.find((item) => item.name === productName);
+
+      if (parameters.quantity && parameters.quantity.listValue && parameters.quantity.listValue.values) {
+        const quantityValues = parameters.quantity.listValue.values;
+      
+        const quantity = quantityValues.find((quantityValue) => quantityValue.stringValue === productName);
+
+        if (product && quantity && quantity.numberValue) {
+          console.log(product, quantity.numberValue);
+          removeFromCart(product, quantity.numberValue);
+        }
+      } else {
+        if (product) {
+          console.log(product, product.quantity);
+          removeFromCart(product, product.quantity);
+        }
+      }
+    });
+  } else {
+    console.error("Product information missing in the response.");
+  }
+
+  scrollToBottom();
+};
 
 
 export {
@@ -271,4 +310,5 @@ export {
   handleFindProduct,
   handleRecommendCategory,
   handleAddOrder,
+  handleRemoveOrder
 };

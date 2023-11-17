@@ -7,7 +7,7 @@ import {
   handleFindProduct,
   handleRecommendCategory,
   handleAddOrder,
-  handleRemoveOrder
+  handleRemoveOrder,
 } from "./IntentHandler";
 
 const Chatbot = () => {
@@ -19,7 +19,7 @@ const Chatbot = () => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [products, setProducts] = useState([]);
   const chatMessagesRef = useRef(null);
-  
+
   const addToCart = (product, quantity = 1) => {
     setCartItems((prevItems) => {
       const existingItemIndex = prevItems.findIndex(
@@ -39,7 +39,6 @@ const Chatbot = () => {
     calculateTotalPrice();
   };
   const removeFromCart = (product, quantity) => {
-    console.log(product, quantity);
     setCartItems((prevItems) => {
       const existingItemIndex = prevItems.findIndex(
         (item) => item.name === product.name
@@ -50,9 +49,8 @@ const Chatbot = () => {
         const existingItem = newCartItems[existingItemIndex];
 
         if (existingItem.quantity > quantity) {
-          existingItem.quantity -= quantity;
+          existingItem.quantity -= quantity / 2;
         } else {
-          // Remove the entire item from the cart if quantity is less than or equal
           newCartItems.splice(existingItemIndex, 1);
         }
 
@@ -64,6 +62,7 @@ const Chatbot = () => {
 
     calculateTotalPrice();
   };
+
   const calculateTotalPrice = () => {
     const totalPrice = cartItems.reduce((total, item) => {
       return total + item.price * item.quantity;
@@ -170,15 +169,20 @@ const Chatbot = () => {
           products,
           response
         );
+        if (productValues.length !== numberValues.length) {
+         
+        }
         setInput("");
       } else if (intentResponse === "order.remove") {
         handleRemoveOrder(
+          setMessages,
           response,
           text,
-          scrollToBottom,
-          removeFromCart,  // Pass removeFromCart function to handleRemoveOrder
+          removeFromCart,
           products
         );
+       
+
         setInput("");
       } else if (intentResponse === "order.completed") {
         if (cartItems.length === 0) {
@@ -241,7 +245,7 @@ const Chatbot = () => {
       console.error("Error during checkout:", error);
     }
   };
-  
+
   const renderCart = () => {
     if (cartItems.length === 0) {
       return null;

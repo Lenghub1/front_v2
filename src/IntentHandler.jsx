@@ -10,7 +10,6 @@ const handleShowProduct = (
   scrollToBottom,
   addToCart
 ) => {
-  console.log(products);
   const productElements = products.map((product, index) => (
     <div key={index} className="product-card">
       <div>
@@ -112,7 +111,6 @@ const handleFindProduct = (
   addToCart
 ) => {
   const searchTerm = response.data.parameters.fields.product.stringValue;
-  console.log(response);
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -239,12 +237,31 @@ const handleAddOrder = (
   products,
   response
 ) => {
-  console.log(response);
-
-  const productValues = response.data.parameters.fields.product.listValue.values;
+  const productValues =
+    response.data.parameters.fields.product.listValue.values;
   const numberValues = response.data.parameters.fields.number.listValue.values;
-  if (productValues.length !== numberValues.length) {
-    console.error("Mismatch in product and quantity values.");
+
+  if (productValues.length < numberValues.length) {
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      {
+        who: "bot",
+        text: "Please provide a specific quantity for each product.",
+      },
+    ]);
+    scrollToBottom();
+    return;
+  }
+
+  if (productValues.length > numberValues.length) {
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      {
+        who: "bot",
+        text: "Please provide the number of the product you want to order.",
+      },
+    ]);
+    scrollToBottom();
     return;
   }
 
@@ -260,55 +277,78 @@ const handleAddOrder = (
       addToCart(selectedProduct, quantity);
     } else {
       console.error(`Product '${productName}' not found in the product list.`);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          who: "bot",
+          text: `Product '${productName}' not found in the product list.`,
+        },
+      ]);
     }
   }
-};
-const handleRemoveOrder = (
-  response,
-  text,
-  scrollToBottom,
-  removeFromCart,
-  products
-) => {
-  const parameters = response.data.parameters.fields;
 
-  if (parameters.product && parameters.product.listValue && parameters.product.listValue.values) {
-    const productValues = parameters.product.listValue.values;
-
-    productValues.forEach((productValue) => {
-      const productName = productValue.stringValue;
-
-      const product = products.find((item) => item.name === productName);
-
-      if (parameters.quantity && parameters.quantity.listValue && parameters.quantity.listValue.values) {
-        const quantityValues = parameters.quantity.listValue.values;
-      
-        const quantity = quantityValues.find((quantityValue) => quantityValue.stringValue === productName);
-
-        if (product && quantity && quantity.numberValue) {
-          console.log(product, quantity.numberValue);
-          removeFromCart(product, quantity.numberValue);
-        }
-      } else {
-        if (product) {
-          console.log(product, product.quantity);
-          removeFromCart(product, product.quantity);
-        }
-      }
-    });
-  } else {
-    console.error("Product information missing in the response.");
-  }
+  setMessages((prevMessages) => [
+    ...prevMessages,
+    { who: "bot", text: response.data.fulfillmentText },
+  ]);
 
   scrollToBottom();
 };
 
+const handleRemoveOrder = (
+  setMessages,
+  response,
+  text,
+  removeFromCart,
+  products
+) => {
+  const productValues =
+    response.data.parameters.fields.product.listValue.values;
+  const numberValues = response.data.parameters.fields.number.listValue.values;
+  if (numberValues.length === 0) {
+    for (let i = 0; i < productValues.length; i++) {
+      const productName = productValues[i].stringValue;
 
+      const selectedProduct = products.find(
+        (product) => product.name.toLowerCase() === productName.toLowerCase()
+      );
+      if (selectedProduct) {
+        removeFromCart(selectedProduct);
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { who: "bot", text: response.data.fulfillmentText },
+        ]);
+        scrollToBottom();
+      } else {
+        console.error(
+          `Product '${productName}' not found in the product list.`
+        );
+      }
+    }
+  } else {
+    for (let i = 0; i < productValues.length; i++) {
+      const quantity = numberValues[i].numberValue;
+      const productName = productValues[i].stringValue;
+
+      const selectedProduct = products.find(
+        (product) => product.name.toLowerCase() === productName.toLowerCase()
+      );
+
+      if (selectedProduct) {
+        removeFromCart(selectedProduct, quantity);
+      } else {
+        console.error(
+          `Product '${productName}' not found in the product list.`
+        );
+      }
+    }
+  }
+};
 export {
   handleShowProduct,
   handleRecommendProduct,
   handleFindProduct,
   handleRecommendCategory,
   handleAddOrder,
-  handleRemoveOrder
+  handleRemoveOrder,
 };
